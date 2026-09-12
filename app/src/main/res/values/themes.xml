@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose supplies the real theme; this is the launch/splash appearance only. -->
+    <style name="Theme.Nutrix" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/nutrix_background</item>
+        <item name="android:navigationBarColor">@color/nutrix_background</item>
+        <item name="android:windowBackground">@color/nutrix_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

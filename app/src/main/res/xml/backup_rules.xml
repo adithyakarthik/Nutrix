@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- API keys are wrapped by an Android Keystore key that never leaves the device,
+         so a restored copy of the ciphertext would be undecryptable anyway. -->
+    <exclude
+        domain="file"
+        path="datastore/nutrix_secrets.preferences_pb" />
+</full-backup-content>

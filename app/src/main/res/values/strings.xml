@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Nutrix</string>
+    <string name="water_channel_name">Water reminders</string>
+    <string name="water_channel_description">Nudges to drink water, spaced across your day</string>
+</resources>
