@@ -30,13 +30,16 @@ data class ProfileFormState(
     val waterRecommendationMl: Int get() = WaterCalculator.recommendedMl(draft)
 
     val validationError: String?
-        get() = when {
-            draft.ageYears !in 13..110 -> "Enter an age between 13 and 110."
-            draft.heightCm !in 100.0..250.0 -> "Enter a height between 100 and 250 cm."
-            draft.weightKg !in 30.0..300.0 -> "Enter a weight between 30 and 300 kg."
-            draft.bodyFatPercent != null && draft.bodyFatPercent !in 3.0..70.0 ->
-                "Body fat should be between 3% and 70%, or left blank."
-            else -> null
+        get() {
+            val bodyFat = draft.bodyFatPercent
+            return when {
+                draft.ageYears !in 13..110 -> "Enter an age between 13 and 110."
+                draft.heightCm !in 100.0..250.0 -> "Enter a height between 100 and 250 cm."
+                draft.weightKg !in 30.0..300.0 -> "Enter a weight between 30 and 300 kg."
+                bodyFat != null && bodyFat !in 3.0..70.0 ->
+                    "Body fat should be between 3% and 70%, or left blank."
+                else -> null
+            }
         }
 }
 
