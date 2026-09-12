@@ -39,6 +39,7 @@ class AppContainer(context: Context) {
                     apiKey = secrets.anthropicApiKey.first()
                         ?: BuildConfig.DEFAULT_ANTHROPIC_API_KEY.ifBlank { null },
                     proxyBaseUrl = secrets.proxyBaseUrl.first(),
+                    model = preferences.claudeModel.first(),
                 )
             }
         },

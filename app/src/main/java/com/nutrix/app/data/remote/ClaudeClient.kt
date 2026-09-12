@@ -1,5 +1,6 @@
 package com.nutrix.app.data.remote
 
+import com.nutrix.app.model.ClaudeModel
 import com.nutrix.app.model.SourceRef
 import com.nutrix.app.util.NutrixJson
 import java.io.IOException
@@ -38,6 +39,8 @@ data class ClaudeConfig(
     val proxyBaseUrl: String? = null,
     /** Set when the user has switched AI features off; nothing is sent anywhere. */
     val disabled: Boolean = false,
+    /** Which model to spend on. Changes the request shape, not just the price. */
+    val model: ClaudeModel = ClaudeModel.DEFAULT,
 ) {
     val isConfigured: Boolean
         get() = !disabled && (!apiKey.isNullOrBlank() || !proxyBaseUrl.isNullOrBlank())
@@ -126,6 +129,7 @@ class ClaudeClient(
         // cannot loop forever on the user's data plan.
         repeat(MAX_PAUSE_CONTINUATIONS) {
             val body = requestBody(
+                model = config.model,
                 system = system,
                 messages = conversation,
                 tools = tools,
@@ -161,6 +165,7 @@ class ClaudeClient(
     ): Flow<ClaudeStreamEvent> = flow {
         val config = requireConfig()
         val body = requestBody(
+            model = config.model,
             system = system,
             messages = messages,
             tools = null,
@@ -263,6 +268,7 @@ class ClaudeClient(
     }
 
     private fun requestBody(
+        model: ClaudeModel,
         system: String,
         messages: List<JsonObject>,
         tools: JsonArray?,
@@ -272,7 +278,7 @@ class ClaudeClient(
         maxWebSearches: Int,
         stream: Boolean,
     ): JsonObject = buildJsonObject {
-        put("model", MODEL)
+        put("model", model.id)
         put("max_tokens", maxTokens)
         if (stream) put("stream", true)
         putJsonArray("system") {
@@ -285,13 +291,16 @@ class ClaudeClient(
                 },
             )
         }
-        putJsonObject("output_config") { put("effort", effort) }
+        // Haiku rejects output_config.effort with a 400, so it is only sent where it exists.
+        if (model.supportsEffort) {
+            putJsonObject("output_config") { put("effort", effort) }
+        }
 
         val allTools = buildJsonArray {
             if (enableWebSearch) {
                 add(
                     buildJsonObject {
-                        put("type", WEB_SEARCH_TOOL)
+                        put("type", model.webSearchToolType)
                         put("name", "web_search")
                         put("max_uses", maxWebSearches)
                     },
@@ -366,12 +375,8 @@ class ClaudeClient(
     }
 
     companion object {
-        const val MODEL = "claude-opus-5"
         const val ANTHROPIC_VERSION = "2023-06-01"
         const val API_BASE = "https://api.anthropic.com"
-
-        /** Dynamic-filtering web search, supported on the model above. */
-        const val WEB_SEARCH_TOOL = "web_search_20260209"
 
         private const val MAX_PAUSE_CONTINUATIONS = 4
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()

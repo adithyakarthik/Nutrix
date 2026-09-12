@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.nutrix.app.AppContainer
+import com.nutrix.app.model.ClaudeModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ data class SettingsUiState(
     val usdaKeySet: Boolean = false,
     val proxyUrl: String = "",
     val aiEnabled: Boolean = true,
+    val model: ClaudeModel = ClaudeModel.DEFAULT,
 )
 
 class SettingsViewModel(private val container: AppContainer) : ViewModel() {
@@ -28,12 +30,14 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         container.secrets.usdaApiKey,
         container.secrets.proxyBaseUrl,
         container.preferences.aiEnabled,
-    ) { anthropic, usda, proxy, aiEnabled ->
+        container.preferences.claudeModel,
+    ) { anthropic, usda, proxy, aiEnabled, model ->
         SettingsUiState(
             anthropicKeySet = !anthropic.isNullOrBlank(),
             usdaKeySet = !usda.isNullOrBlank(),
             proxyUrl = proxy.orEmpty(),
             aiEnabled = aiEnabled,
+            model = model,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
@@ -62,6 +66,13 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.secrets.setProxyBaseUrl(url)
             _message.value = if (url.isBlank()) "Proxy cleared." else "Requests will go through your proxy."
+        }
+    }
+
+    fun setModel(model: ClaudeModel) {
+        viewModelScope.launch {
+            container.preferences.setClaudeModel(model)
+            _message.value = "Scans and questions now use ${model.label.lowercase()}."
         }
     }
 

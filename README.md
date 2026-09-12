@@ -87,8 +87,19 @@ Nutrix ships with no keys. Both are optional and both are entered in the app und
 
 | Key | What it unlocks | Where to get it |
 | --- | --- | --- |
-| Anthropic | Photo analysis, the chatbot, the goal review | [console.anthropic.com](https://console.anthropic.com) |
+| Anthropic | Photo analysis, the chatbot, the goal review | [console.anthropic.com](https://console.anthropic.com) (pay-as-you-go) |
 | USDA FDC | Lab-measured ingredient lookups | [fdc.nal.usda.gov/api-key-signup.html](https://fdc.nal.usda.gov/api-key-signup.html) (free) |
+
+There is no free tier for the Anthropic API, so the two AI features cost real money to run —
+a few cents per scan. **Settings → Which model reads your food** picks the tier: Opus 5 for the
+best portion estimates, Sonnet 5 for a cheaper everyday setting, Haiku 4.5 for testing. The
+request shape follows the model, not just the price — Haiku rejects the `effort` parameter and
+takes the older web-search tool — so the capability flags on `ClaudeModel` are what the client
+builds each request from.
+
+Without an Anthropic key the app still works: goals, DRI targets, the diary, recipes through the
+free USDA database, water tracking and reminders are all on-device or free. Only the camera
+scanning and the chatbot go dark.
 
 Keys are encrypted with an AES-256 key held in the device's hardware-backed Android Keystore and
 are excluded from cloud backup and device transfer.
@@ -141,6 +152,12 @@ malformed answer fails loudly instead of silently logging 400 g of protein.
 
 Reminders are a self-rescheduling one-time WorkManager job rather than a periodic one: the gap is
 a user setting that has to be honoured exactly and must stop at the end of their waking window.
+
+### Continuous integration
+
+`.github/workflows/android.yml` runs the unit tests and assembles a debug APK on every push.
+The APK lands in the run's artifacts, which is the quickest way to get a build onto a phone
+without installing Android Studio.
 
 ### Tests
 

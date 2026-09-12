@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.nutrix.app.util.NutrixJson
+import com.nutrix.app.model.ClaudeModel
 import com.nutrix.app.model.NutrientGoals
 import com.nutrix.app.model.UserProfile
 import com.nutrix.app.model.WaterSettings
@@ -43,6 +44,13 @@ class UserPreferencesRepository(context: Context) {
     /** Whether the user has opted into sending photos and questions to Claude. */
     val aiEnabled: Flow<Boolean> = dataStore.data.map { it[KEY_AI_ENABLED] ?: true }
 
+    /** Which model photos and questions go to — the app's only real cost lever. */
+    val claudeModel: Flow<ClaudeModel> = dataStore.data.map { prefs ->
+        prefs[KEY_MODEL]
+            ?.let { stored -> ClaudeModel.entries.firstOrNull { it.name == stored } }
+            ?: ClaudeModel.DEFAULT
+    }
+
     val onboardingComplete: Flow<Boolean> = dataStore.data.map { it[KEY_ONBOARDED] ?: false }
 
     suspend fun setProfile(profile: UserProfile) = dataStore.edit { prefs ->
@@ -59,6 +67,8 @@ class UserPreferencesRepository(context: Context) {
 
     suspend fun setAiEnabled(enabled: Boolean) = dataStore.edit { it[KEY_AI_ENABLED] = enabled }
 
+    suspend fun setClaudeModel(model: ClaudeModel) = dataStore.edit { it[KEY_MODEL] = model.name }
+
     suspend fun setOnboardingComplete(complete: Boolean) = dataStore.edit { it[KEY_ONBOARDED] = complete }
 
     private fun <T> String.decodeOr(serializer: kotlinx.serialization.KSerializer<T>): T? =
@@ -70,5 +80,6 @@ class UserPreferencesRepository(context: Context) {
         val KEY_WATER = stringPreferencesKey("water_settings")
         val KEY_AI_ENABLED = booleanPreferencesKey("ai_enabled")
         val KEY_ONBOARDED = booleanPreferencesKey("onboarding_complete")
+        val KEY_MODEL = stringPreferencesKey("claude_model")
     }
 }
