@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
 
     implementation(libs.coil.compose)
+    implementation(libs.androidx.exifinterface)
     implementation(libs.accompanist.permissions)
 
     implementation(libs.okhttp)

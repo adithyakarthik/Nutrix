@@ -64,11 +64,16 @@ data class UserProfile(
 
     /** Lean body mass from body fat % when we have it; Boer formula estimate otherwise. */
     val leanBodyMassKg: Double
-        get() = bodyFatPercent?.let { weightKg * (1 - it / 100.0) }
-            ?: when (sex) {
-                Sex.MALE -> 0.407 * weightKg + 0.267 * heightCm - 19.2
-                Sex.FEMALE -> 0.252 * weightKg + 0.473 * heightCm - 48.3
-            }.coerceIn(weightKg * 0.4, weightKg)
+        get() {
+            val raw = bodyFatPercent?.let { weightKg * (1 - it / 100.0) }
+                ?: when (sex) {
+                    Sex.MALE -> 0.407 * weightKg + 0.267 * heightCm - 19.2
+                    Sex.FEMALE -> 0.252 * weightKg + 0.473 * heightCm - 48.3
+                }
+            // Both routes can produce nonsense from an odd height/weight pair or a mistyped
+            // body-fat figure, and lean mass feeds straight into the calorie target.
+            return raw.coerceIn(weightKg * 0.4, weightKg)
+        }
 
     val displayName: String get() = name.ifBlank { "there" }
 }

@@ -5,6 +5,8 @@ import com.nutrix.app.model.GoalVerdict
 import com.nutrix.app.model.UserProfile
 import com.nutrix.app.model.WaterAdvice
 import com.nutrix.app.model.WaterSettings
+import java.time.LocalDateTime
+import java.time.LocalTime
 import kotlin.math.roundToInt
 
 /** A concrete reminder plan: when to ping, how much to drink, and whether it adds up. */
@@ -187,6 +189,28 @@ object WaterCalculator {
             suggestedIntervalMinutes = suggestedInterval,
             suggestedAmountMl = suggestedAmount,
         )
+    }
+
+    /**
+     * The next moment a reminder should fire: the next slot inside today's window, or the start
+     * of tomorrow's once the day is done. Pure arithmetic, so the scheduler stays a thin shell
+     * over something that can be tested.
+     */
+    fun nextReminderAt(settings: WaterSettings, from: LocalDateTime): LocalDateTime {
+        val startTime = LocalTime.ofSecondOfDay(settings.activeStartMinute.coerceIn(0, 1439).toLong() * 60)
+        val endTime = LocalTime.ofSecondOfDay(settings.activeEndMinute.coerceIn(0, 1439).toLong() * 60)
+
+        val todayStart = from.toLocalDate().atTime(startTime)
+        val todayEnd = from.toLocalDate().atTime(endTime)
+
+        return when {
+            from.isBefore(todayStart) -> todayStart
+            from.isAfter(todayEnd) -> todayStart.plusDays(1)
+            else -> {
+                val candidate = from.plusMinutes(settings.intervalMinutes.coerceAtLeast(1).toLong())
+                if (candidate.isAfter(todayEnd)) todayStart.plusDays(1) else candidate
+            }
+        }
     }
 
     fun formatGap(minutes: Int): String = when {
