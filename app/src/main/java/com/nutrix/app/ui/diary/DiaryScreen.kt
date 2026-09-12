@@ -107,8 +107,8 @@ fun DiaryScreen(onScan: () -> Unit) {
                         EmptyState(
                             icon = Icons.Default.NoMeals,
                             title = if (state.isToday) "Nothing logged today" else "Nothing logged that day",
-                            message = "Meals you scan or log from a recipe show up here.",
-                            actionLabel = if (state.isToday) "Scan food" else null,
+                            message = "Anything you scan, search for or log from a recipe shows up here.",
+                            actionLabel = if (state.isToday) "Add food" else null,
                             onAction = if (state.isToday) onScan else null,
                         )
                     }

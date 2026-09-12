@@ -9,12 +9,23 @@ Android, Kotlin, Jetpack Compose, Material 3.
 
 ## What it does
 
-**Scan food.** Photograph a meal. Claude identifies the dish, estimates the portion from what is
-in frame, searches published food composition data, and returns a full breakdown — energy,
-protein, carbs, fat, saturated fat, fibre, sugar, vitamins A, B1, B2, B3, B5, B6, B7, B9, B12, C,
-D, E and K, and calcium, iron, magnesium, zinc, potassium, sodium, iodine, selenium, phosphorus,
-copper and manganese. Portion is the biggest source of error in any photo estimate, so it is
-editable before you log it.
+**Scan a barcode.** Point the camera at any packet. The barcode reader runs on-device via ML Kit
+and the product comes back from Open Food Facts — an open database of millions of products,
+free, with no API key of any kind. What you get is the manufacturer's own nutrition panel, which
+beats estimating from a photograph because it isn't an estimate.
+
+**Search any food.** One box searches Open Food Facts, USDA FoodData Central and the table built
+into the app at once, and labels every hit with where it came from, so you can see whether a
+number was measured in a lab, copied off a packet, or approximated. Set the portion and log it.
+
+**Every nutrient, everywhere.** Energy, protein, carbs, fat, saturated fat, fibre, sugar, vitamins
+A, B1, B2, B3, B5, B6, B7, B9, B12, C, D, E and K, and calcium, iron, magnesium, zinc, potassium,
+sodium, iodine, selenium, phosphorus, copper and manganese. Where a source doesn't declare a
+nutrient it stays blank rather than being invented as zero.
+
+**Estimate from a photo (optional, paid).** For home-cooked food with no barcode, Claude can
+identify the dish, estimate the portion and cost it out. This is the one feature that needs a
+paid API key, it's off by default, and everything else works without it.
 
 **Goals that come from your body.** Height, weight, age, sex and activity level go into
 Mifflin-St Jeor — or Katch-McArdle when you know your body fat — and out come calorie, protein,
@@ -48,17 +59,18 @@ doctor" where that is the honest answer.
 
 In this order, because a measured value beats an estimate:
 
-1. **USDA FoodData Central** — lab-measured composition, used for named ingredients.
-2. **Claude with web search** — for photographed dishes, which have no database entry, and for
-   ingredients USDA does not cover. The model is instructed to search food composition databases
-   and research rather than answer from recall, and the sources it used are shown with the result.
-3. **A bundled offline table** — about forty staples, so the recipe builder works on a plane and
-   before you have entered any key. Always labelled approximate.
+1. **Open Food Facts** — the product's own label. Free, open, and needs no API key at all.
+2. **USDA FoodData Central** — lab-measured composition for whole foods. Free key.
+3. **A bundled offline table** — about forty staples, so the app works on a plane and before you
+   have entered any key. Always labelled approximate.
 4. **The DRI tables** (RDA/AI and upper limits, from the NIH Office of Dietary Supplements) for
    targets, shipped in the app and never fetched.
+5. **Claude with web search** — last, and only for photographed dishes that have no database
+   entry. This is the only source that costs money, and the only one that is optional.
 
-Every energy and goal calculation runs on-device. No network, no key, no problem — you still get
-correct targets, tracking, recipes from the offline table, and reminders.
+Every energy and goal calculation runs on-device. **Nutrix is free to run.** Barcode scanning,
+food search, the diary, recipes, goals, water tracking and reminders involve no paid service at
+all — the AI photo estimate and the chatbot are extras, switched off until you turn them on.
 
 ### Accuracy, honestly
 
@@ -90,16 +102,15 @@ Nutrix ships with no keys. Both are optional and both are entered in the app und
 | Anthropic | Photo analysis, the chatbot, the goal review | [console.anthropic.com](https://console.anthropic.com) (pay-as-you-go) |
 | USDA FDC | Lab-measured ingredient lookups | [fdc.nal.usda.gov/api-key-signup.html](https://fdc.nal.usda.gov/api-key-signup.html) (free) |
 
-There is no free tier for the Anthropic API, so the two AI features cost real money to run —
-a few cents per scan. **Settings → Which model reads your food** picks the tier: Opus 5 for the
-best portion estimates, Sonnet 5 for a cheaper everyday setting, Haiku 4.5 for testing. The
-request shape follows the model, not just the price — Haiku rejects the `effort` parameter and
-takes the older web-search tool — so the capability flags on `ClaudeModel` are what the client
-builds each request from.
+**Neither key is required.** Open Food Facts needs none, so barcode scanning and product search
+work the moment you install the app.
 
-Without an Anthropic key the app still works: goals, DRI targets, the diary, recipes through the
-free USDA database, water tracking and reminders are all on-device or free. Only the camera
-scanning and the chatbot go dark.
+There is no free tier for the Anthropic API, so the two AI features cost real money — a few cents
+per scan. They are off by default. **Settings → Which model reads your food** picks the tier if
+you do turn them on: Opus 5 for the best portion estimates, Sonnet 5 for a cheaper everyday
+setting, Haiku 4.5 for testing. The request shape follows the model, not just the price — Haiku
+rejects the `effort` parameter and takes the older web-search tool — so the capability flags on
+`ClaudeModel` are what the client builds each request from.
 
 Keys are encrypted with an AES-256 key held in the device's hardware-backed Android Keystore and
 are excluded from cloud backup and device transfer.

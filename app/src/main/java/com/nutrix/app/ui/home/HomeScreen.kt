@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.NoMeals
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -94,8 +93,8 @@ fun HomeScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onScan,
-                icon = { Icon(Icons.Default.PhotoCamera, contentDescription = null) },
-                text = { Text("Scan food") },
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text("Add food") },
             )
         },
     ) { padding ->
@@ -181,8 +180,8 @@ fun HomeScreen(
                         EmptyState(
                             icon = Icons.Default.NoMeals,
                             title = "Nothing logged yet",
-                            message = "Photograph a plate and Nutrix works out what is in it.",
-                            actionLabel = "Scan food",
+                            message = "Scan a barcode or search by name — both are free and take seconds.",
+                            actionLabel = "Add food",
                             onAction = onScan,
                         )
                     } else {

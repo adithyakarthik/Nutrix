@@ -106,6 +106,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.androidx.exifinterface)
+    implementation(libs.mlkit.barcode.scanning)
     implementation(libs.accompanist.permissions)
 
     implementation(libs.okhttp)

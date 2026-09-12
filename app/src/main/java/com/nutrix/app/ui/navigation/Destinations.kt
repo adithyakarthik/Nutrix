@@ -3,7 +3,7 @@ package com.nutrix.app.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.outlined.Chat
@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 object Routes {
     const val ONBOARDING = "onboarding"
     const val HOME = "home"
+    const val LOOKUP = "lookup"
     const val SCAN = "scan"
     const val DIARY = "diary"
     const val RECIPES = "recipes"
@@ -41,7 +42,7 @@ data class BottomDestination(
 val bottomDestinations = listOf(
     BottomDestination(Routes.HOME, "Today", Icons.Filled.Restaurant, Icons.Outlined.Restaurant),
     BottomDestination(Routes.DIARY, "Diary", Icons.Filled.Timeline, Icons.Outlined.Timeline),
-    BottomDestination(Routes.SCAN, "Scan", Icons.Filled.PhotoCamera, Icons.Filled.PhotoCamera),
+    BottomDestination(Routes.LOOKUP, "Add", Icons.Filled.AddCircle, Icons.Filled.AddCircle),
     BottomDestination(Routes.RECIPES, "Recipes", Icons.Filled.MenuBook, Icons.Outlined.MenuBook),
     BottomDestination(Routes.CHAT, "Ask", Icons.Filled.Chat, Icons.Outlined.Chat),
 )

@@ -7,8 +7,10 @@ import com.nutrix.app.data.prefs.UserPreferencesRepository
 import com.nutrix.app.data.remote.ClaudeClient
 import com.nutrix.app.data.remote.ClaudeConfig
 import com.nutrix.app.data.remote.FoodDataCentralClient
+import com.nutrix.app.data.remote.OpenFoodFactsClient
 import com.nutrix.app.data.repository.ChatRepository
 import com.nutrix.app.data.repository.DiaryRepository
+import com.nutrix.app.data.repository.FoodSearchRepository
 import com.nutrix.app.data.repository.NutritionRepository
 import com.nutrix.app.data.repository.ProfileRepository
 import com.nutrix.app.data.repository.RecipeRepository
@@ -47,6 +49,15 @@ class AppContainer(context: Context) {
 
     private val foodDataCentral = FoodDataCentralClient(
         apiKeyProvider = { secrets.usdaApiKey.first() ?: BuildConfig.DEFAULT_USDA_API_KEY.ifBlank { null } },
+    )
+
+    private val openFoodFacts = OpenFoodFactsClient()
+
+    /** Barcode and name lookup across the three free sources. No paid account involved. */
+    val foodSearchRepository = FoodSearchRepository(
+        openFoodFacts = openFoodFacts,
+        foodDataCentral = foodDataCentral,
+        ingredientCache = database.ingredientCacheDao(),
     )
 
     val nutritionRepository = NutritionRepository(

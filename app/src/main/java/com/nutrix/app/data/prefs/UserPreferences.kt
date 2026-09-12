@@ -41,8 +41,12 @@ class UserPreferencesRepository(context: Context) {
         prefs[KEY_WATER]?.decodeOr(WaterSettings.serializer()) ?: WaterSettings()
     }
 
-    /** Whether the user has opted into sending photos and questions to Claude. */
-    val aiEnabled: Flow<Boolean> = dataStore.data.map { it[KEY_AI_ENABLED] ?: true }
+    /**
+     * Whether the user has opted into the paid AI features. Off by default — barcode scanning,
+     * food search, recipes, goals and water all work without it, and nothing should reach a
+     * billable API because the user never opened Settings.
+     */
+    val aiEnabled: Flow<Boolean> = dataStore.data.map { it[KEY_AI_ENABLED] ?: false }
 
     /** Which model photos and questions go to — the app's only real cost lever. */
     val claudeModel: Flow<ClaudeModel> = dataStore.data.map { prefs ->

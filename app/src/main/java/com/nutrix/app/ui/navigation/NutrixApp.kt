@@ -23,6 +23,7 @@ import com.nutrix.app.ui.chat.ChatScreen
 import com.nutrix.app.ui.diary.DiaryScreen
 import com.nutrix.app.ui.goals.GoalsScreen
 import com.nutrix.app.ui.home.HomeScreen
+import com.nutrix.app.ui.lookup.LookupScreen
 import com.nutrix.app.ui.profile.OnboardingScreen
 import com.nutrix.app.ui.profile.ProfileScreen
 import com.nutrix.app.ui.recipes.RecipeEditorScreen
@@ -88,7 +89,7 @@ fun NutrixApp(
             }
             composable(Routes.HOME) {
                 HomeScreen(
-                    onScan = { navController.navigate(Routes.SCAN) },
+                    onScan = { navController.navigate(Routes.LOOKUP) },
                     onOpenWater = { navController.navigate(Routes.WATER) },
                     onOpenGoals = { navController.navigate(Routes.GOALS) },
                     onOpenProfile = { navController.navigate(Routes.PROFILE) },
@@ -97,11 +98,17 @@ fun NutrixApp(
                     onOpenChat = { navController.navigate(Routes.CHAT) },
                 )
             }
+            composable(Routes.LOOKUP) {
+                LookupScreen(
+                    onDone = { navController.popBackStack() },
+                    onOpenPhotoScan = { navController.navigate(Routes.SCAN) },
+                )
+            }
             composable(Routes.SCAN) {
                 ScanScreen(onDone = { navController.popBackStack() })
             }
             composable(Routes.DIARY) {
-                DiaryScreen(onScan = { navController.navigate(Routes.SCAN) })
+                DiaryScreen(onScan = { navController.navigate(Routes.LOOKUP) })
             }
             composable(Routes.RECIPES) {
                 RecipeListScreen(
